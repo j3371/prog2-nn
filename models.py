@@ -25,11 +25,15 @@ class MyModel(nn.Module):
         logits=self.network(x)
         return logits
     
-    def test_accuracy(model,dataloader):
+    def test_accuracy(model,dataloader,device='cpu'):
         n_corrects=0
 
+        model.to(device)
         model.eval()
         for image_batch,label_batch in dataloader:
+            image_batch.to(device)   
+            label_batch.to(device)
+
             with torch.no_grad():
                 logits_batch=model(image_batch)
 
@@ -40,10 +44,14 @@ class MyModel(nn.Module):
 
         return accuracy
     
-    def train(model,dataloader,loss_fn,optimizer):
+    def train(model,dataloader,loss_fn,optimizer,device='cpu'):
         """1 epoch の学習を行う"""
+        model.to(device)
         model.train()
         for image_batch,label_batch in dataloader:
+            image_batch.to(device)
+            label_batch.to(device)
+            
             logits_batch=model(image_batch)
             loss=loss_fn(logits_batch,label_batch)
             optimizer.zero_grad()
@@ -52,11 +60,15 @@ class MyModel(nn.Module):
 
         return loss.item()
     
-    def test(model, dataloader, loss_fn):
+    def test(model, dataloader, loss_fn,device='cpu'):
         loss_total=0.0
 
+        model.to(device)
         model.eval()
         for image_batch,label_batch in dataloader:
+            image_batch.to(device)
+            label_batch.to(device)
+            
             with torch.no_grad():
                 logits_batch=model(image_batch)
 
